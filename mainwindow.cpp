@@ -58,6 +58,7 @@ private:
 
 public:
     BST() { root = NULL; }
+    void clear(){root=NULL;}
     node *createleaf(int document_number, QString word)
     {
         node *n = new node;
@@ -250,7 +251,7 @@ void MainWindow::on_ok_button_clicked()
                 QStringList words=line.split(rx, QString::SkipEmptyParts);   //splits line into words
                 for (int j=0;j<words.size();j++)
                 {
-                    myTree.addleaf(i,words[j]);
+                    myTree.addleaf(i,words[j].toLower());
                 }
             }
             File.close();
@@ -269,16 +270,23 @@ void MainWindow::on_search_button_clicked()
 {
     ui->textEdit->clear();
     QString word = ui->search_lineEdit->text();
+    QString word_lower = word.toLower();
     QVector <int> indices;
-    indices = myTree.search(word);
+    indices = myTree.search(word.toLower());
     if(indices[0]==-1)
     {
         ui->textEdit->setTextColor(QColorConstants::Red);
         ui->textEdit->append("The word "+ word +" is not found!" );
         return ;
     }
+    ui->progressBar->show();
+    ui->textEdit->setFontWeight(99);
     ui->textEdit->setTextColor(QColorConstants::Green);
     ui->textEdit->append("The word is found in "+ QString::number(indices.size()) +" document" );
+    ui->textEdit->setFontUnderline(false);
+    ui->textEdit->setFontWeight(50);
+
+    ui->textEdit->append("" );
 
     for (int i = 0; i<indices.size(); i++)
     {
@@ -294,15 +302,18 @@ void MainWindow::on_search_button_clicked()
             while (!in.atEnd())
             {
                 QString line = in.readLine();         //reads line at a time
+                QString line_lower = line.toLower();         //reads line at a time
+                //ui->textEdit->append(line);
+
                 int x = 0,y,start=0;
                 while(1)
                 {
-                    y = line.indexOf(word,start);
-                    if(y==0 && (line[word.size()]==' '||line[word.size()]=='?'||line[word.size()]==','||line[word.size()]=='.'||line[word.size()]==':'))
+                    y = line_lower.indexOf(word_lower,start);
+                    if(y==0 && (line[word.size()]==' '||line[word.size()]=='?'||line[word.size()]==','||line[word.size()]=='.'||line[word.size()]==':'||line.size()==word.size()))
                     {
                         ui->textEdit->setFontUnderline(true);
                         ui->textEdit->setFontWeight(99);
-                        ui->textEdit->insertPlainText(word);
+                        ui->textEdit->insertPlainText(line.mid(y,word.size()));
                         ui->textEdit->setFontUnderline(false);
                         ui->textEdit->setFontWeight(50);
                         x=y+word.size();
@@ -314,7 +325,7 @@ void MainWindow::on_search_button_clicked()
                         ui->textEdit->insertPlainText(line.mid(x,y-x));
                         ui->textEdit->setFontUnderline(true);
                         ui->textEdit->setFontWeight(99);
-                        ui->textEdit->insertPlainText(word);
+                        ui->textEdit->insertPlainText(line.mid(y,word.size()));
                         ui->textEdit->setFontUnderline(false);
                         ui->textEdit->setFontWeight(50);
                         x=y+word.size();
@@ -325,7 +336,7 @@ void MainWindow::on_search_button_clicked()
                         ui->textEdit->insertPlainText(line.mid(x,y-x));
                         ui->textEdit->setFontUnderline(true);
                         ui->textEdit->setFontWeight(99);
-                        ui->textEdit->insertPlainText(word);
+                        ui->textEdit->insertPlainText(line.mid(y,word.size()));
                         ui->textEdit->setFontUnderline(false);
                         ui->textEdit->setFontWeight(50);
                         x=y+word.size();
@@ -333,6 +344,7 @@ void MainWindow::on_search_button_clicked()
                     }
                     else if(y==-1)
                     {
+                        ui->textEdit->insertPlainText(line.right(line.size()-x));
                         break;
                     }
                     else
@@ -381,5 +393,18 @@ void MainWindow::on_search_button_clicked()
             File.close();
         }
         ui->textEdit->append("");
+
+        ui->progressBar->setValue(i*100/indices.size());
+        qApp->processEvents();
+
     }
+
+    ui->progressBar->hide();
+}
+
+void MainWindow::on_reset_clicked()
+{
+    ui->textEdit->clear();
+    myTree.clear();
+
 }
