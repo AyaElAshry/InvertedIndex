@@ -247,7 +247,7 @@ void MainWindow::on_ok_button_clicked()
             while (!in.atEnd())
             {
                 QString line = in.readLine();         //reads line at a time
-                QRegExp rx("(\\ |\\,|\\.|\\:|\\t|\\?)");
+                QRegExp rx("(\\ |\\,|\\.|\\:|\\?|\\'|\\!)");
                 QStringList words=line.split(rx, QString::SkipEmptyParts);   //splits line into words
                 for (int j=0;j<words.size();j++)
                 {
@@ -256,11 +256,10 @@ void MainWindow::on_ok_button_clicked()
             }
             File.close();
         }
-        if(i%200==0)
-        {
-            ui->progressBar->setValue(i*100/files_number);
-            qApp->processEvents();
-        }
+
+        ui->progressBar->setValue(i*100/files_number);
+        qApp->processEvents();
+
     }
     ui->progressBar->hide();
     QMessageBox::information(this,"finished","documents are uploaded succesfully");
@@ -272,7 +271,7 @@ void MainWindow::on_search_button_clicked()
     QString word = ui->search_lineEdit->text();
     QString word_lower = word.toLower();
     QVector <int> indices;
-    indices = myTree.search(word.toLower());
+    indices = myTree.search(word_lower);
     if(indices[0]==-1)
     {
         ui->textEdit->setTextColor(QColorConstants::Red);
@@ -309,7 +308,8 @@ void MainWindow::on_search_button_clicked()
                 while(1)
                 {
                     y = line_lower.indexOf(word_lower,start);
-                    if(y==0 && (line[word.size()]==' '||line[word.size()]=='?'||line[word.size()]==','||line[word.size()]=='.'||line[word.size()]==':'||line.size()==word.size()))
+                    //"(\\ |\\,|\\.|\\:|\\t|\\?|\\')"
+                    if(y==0 && (line[word.size()]==' '||line[word.size()]==','||line[word.size()]=='.'||line[word.size()]=='?'||line[word.size()]==':'||line[word.size()]=='\''||line.size()==word.size()))
                     {
                         ui->textEdit->setFontUnderline(true);
                         ui->textEdit->setFontWeight(99);
@@ -319,8 +319,8 @@ void MainWindow::on_search_button_clicked()
                         x=y+word.size();
                         start=x;
                     }
-                    else if(y!=-1 && (line[y+word.size()]==' '||line[y+word.size()]=='?'||line[y+word.size()]==','||line[y+word.size()]=='.'||line[y+word.size()]==':')
-                            && (line[y-1]==' '||line[y-1]=='?'||line[y-1]==','||line[y-1]=='.'||line[y-1]==':'))
+                    else if(y!=-1 && (line[y+word.size()]==' '||line[y+word.size()]=='?'||line[y+word.size()]==','||line[y+word.size()]=='.'||line[y+word.size()]==':'||line[y+word.size()]=='\'')
+                            && (line[y-1]==' '||line[y-1]=='?'||line[y-1]==','||line[y-1]=='.'||line[y-1]==':'||line[y-1]=='\''))
                     {
                         ui->textEdit->insertPlainText(line.mid(x,y-x));
                         ui->textEdit->setFontUnderline(true);
@@ -331,7 +331,7 @@ void MainWindow::on_search_button_clicked()
                         x=y+word.size();
                         start=x;
                     }
-                    else if(y==line.size()-word.size() && (line[y-1]==' '||line[y-1]=='?'||line[y-1]==','||line[y-1]=='.'||line[y-1]==':'))
+                    else if(y==line.size()-word.size() && (line[y-1]==' '||line[y-1]=='?'||line[y-1]==','||line[y-1]=='.'||line[y-1]==':'||line[y-1]=='\''))
                     {
                         ui->textEdit->insertPlainText(line.mid(x,y-x));
                         ui->textEdit->setFontUnderline(true);
