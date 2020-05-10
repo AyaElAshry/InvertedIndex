@@ -2,6 +2,99 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+struct node
+{
+    QVector<int> index;
+    int document_number;
+    QString word;
+    node *left;
+    node *right;
+};
+
+class BST
+{
+
+private:
+    node *root;
+
+    void addleafprivate(int document_number, QString word, node *ptr)
+    {
+        if (root == NULL)
+        {
+
+            root = createleaf(document_number, word);
+        }
+        else if (word < ptr->word)
+        {
+            if (ptr->left != NULL)
+            {
+                addleafprivate(document_number, word, ptr->left);
+            }
+            else
+            {
+                ptr->left = createleaf(document_number, word);
+            }
+        }
+        else if (word > ptr->word)
+        {
+            if (ptr->right != NULL)
+            {
+                addleafprivate(document_number, word, ptr->right);
+            }
+            else
+            {
+                ptr->right = createleaf(document_number, word);
+            }
+        }
+        else if (word == ptr->word)
+        {
+            if (document_number != ptr->index.back())
+            {
+                ptr->index.push_back(document_number);
+            }
+        }
+    }
+
+public:
+    BST() { root = NULL; }
+    node *createleaf(int document_number, QString word)
+    {
+        node *n = new node;
+        n->index.push_back(document_number);
+        n->word = word;
+        n->left = n->right = NULL;
+        return n;
+    }
+    void addleaf(int document_number, QString word)
+    {
+        addleafprivate(document_number, word, root);
+    }
+    QVector<int> search(QString word)
+    {
+        node *current;
+        current = root;
+        while (current != NULL)
+        {
+            if (current->word == word)
+            {
+                return current->index;
+
+            }
+            else if (word < current->word)
+            {
+                current = current->left;
+            }
+            else if (word > current->word)
+            {
+                current = current->right;
+            }
+        }
+        QVector<int > r{ -1 };
+        return r;
+    }
+};
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -127,7 +220,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//tree myTree;
+BST myTree;
 QString dir;
 QStringList file_names;
 
@@ -157,7 +250,7 @@ void MainWindow::on_ok_button_clicked()
                 QStringList words=line.split(rx, QString::SkipEmptyParts);   //splits line into words
                 for (int j=0;j<words.size();j++)
                 {
-                    //myTree.insert(words[k],i);
+                    myTree.addleaf(i,words[j]);
                 }
             }
             File.close();
@@ -177,7 +270,16 @@ void MainWindow::on_search_button_clicked()
     ui->textEdit->clear();
     QString word = ui->search_lineEdit->text();
     QVector <int> indices;
-    //indices = myTree.search(word);
+    indices = myTree.search(word);
+    if(indices[0]==-1)
+    {
+        ui->textEdit->setTextColor(QColorConstants::Red);
+        ui->textEdit->append("The word "+ word +" is not found!" );
+        return ;
+    }
+    ui->textEdit->setTextColor(QColorConstants::Green);
+    ui->textEdit->append("The word is found in "+ QString::number(indices.size()) +" document" );
+
     for (int i = 0; i<indices.size(); i++)
     {
         ui->textEdit->setTextColor(QColorConstants::Blue);
