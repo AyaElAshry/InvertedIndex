@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->directory_lineEdit->setText("");
+    ui->directory_lineEdit->setText("H:/3rd comp/Inverted Index/questions/");
     ui->progressBar->hide();
     ui->textEdit->setReadOnly(true);
     /*ui->textEdit->setTextColor(QColorConstants::Blue);
@@ -227,16 +227,9 @@ QStringList file_names;
 
 void MainWindow::on_ok_button_clicked()
 {
-    QFileDialog dialog;
-    dialog.setFileMode(QFileDialog::DirectoryOnly);
-    dialog.setOption(QFileDialog::DontUseNativeDialog, true);
-    dialog.setOption(QFileDialog::ShowDirsOnly, false);
-    dialog.exec();
-    //qDebug() << dialog.directory();
-
     ui->progressBar->show();
-    //dir=ui->directory_lineEdit->text();
-    QDir directory(dialog.directory());
+    dir = ui->directory_lineEdit->text();
+    QDir directory(dir);
     file_names = directory.entryList(QDir::Files,QDir::Name);
     int files_number = file_names.size();
     /*for (int j=0;j<files_number;j++)
