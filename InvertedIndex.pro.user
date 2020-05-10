@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
 <!-- Written by QtCreator 4.11.1, 2020-05-11T01:48:42. -->
+=======
+<!-- Written by QtCreator 4.11.1, 2020-05-09T22:09:55. -->
+>>>>>>> parent of bd760c8... .
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
