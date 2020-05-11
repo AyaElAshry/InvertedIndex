@@ -11,7 +11,6 @@ struct node
     node *left;
     node *right;
 };
-
 class BST
 {
 
@@ -61,21 +60,22 @@ private:
         if (cn->left == NULL && cn->right == NULL)
         {
             delete cn;
-            cn = NULL;
-            return;
         }
         else if (cn->left == NULL)
         {
             clear_rec(cn->right);
+            delete cn;
         }
         else if (cn->right == NULL)
         {
             clear_rec(cn->left);
+            delete cn;
         }
         else
         {
             clear_rec(cn->left);
             clear_rec(cn->right);
+            delete cn;
         }
     }
 
@@ -84,7 +84,6 @@ public:
     void clear()
     {
         clear_rec(root);
-        delete root;
         root = NULL;
     }
     node *createleaf(int document_number, QString word)
@@ -434,5 +433,4 @@ void MainWindow::on_reset_clicked()
 {
     ui->textEdit->clear();
     myTree.clear();
-
 }
