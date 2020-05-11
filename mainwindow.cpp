@@ -55,10 +55,38 @@ private:
             }
         }
     }
+    void clear_rec(node* &cn)
+    {
+
+        if (cn->left == NULL && cn->right == NULL)
+        {
+            delete cn;
+            cn = NULL;
+            return;
+        }
+        else if (cn->left == NULL)
+        {
+            clear_rec(cn->right);
+        }
+        else if (cn->right == NULL)
+        {
+            clear_rec(cn->left);
+        }
+        else
+        {
+            clear_rec(cn->left);
+            clear_rec(cn->right);
+        }
+    }
 
 public:
     BST() { root = NULL; }
-    void clear(){root=NULL;}
+    void clear()
+    {
+        clear_rec(root);
+        delete root;
+        root = NULL;
+    }
     node *createleaf(int document_number, QString word)
     {
         node *n = new node;
