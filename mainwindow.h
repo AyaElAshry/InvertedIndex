@@ -5,7 +5,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QMessageBox>
-
+#include <QFileDialog>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
